@@ -1,0 +1,190 @@
+#include <SFML/Graphics.hpp>
+#include<iostream>
+#include<cmath>
+#define PI 3.141592654
+
+const int num=8; //checkpoints
+int points[num][2] = {300, 610,
+                      1270,430,
+                      1380,2380,
+                      1900,2460,
+                      1970,1700,
+                      2550,1680,
+                      2560,3150,
+                      500, 3300};
+
+struct Car{
+
+float x,y,angle,speed; int n = 0;
+
+
+void move(){
+
+y -= cos(angle) * speed;
+x += sin(angle) * speed;}
+
+void opponents(){
+
+float fx = points[n][0];
+
+
+float fy = points[n][1];
+
+
+float beta = angle - atan2(fx-x,y-fy);
+//std::cout<<atan2(fx-x,y-fy)<<std::endl;
+
+if(sin(beta)< 0) angle += 0.004 *speed; else angle -= 0.004*speed;
+//std::cout<<angle<<std::endl;
+if((x-fx)*(x-fx)+(y-fy)*(y-fy) < 25*25) n =(n+1) % num;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+}car[5];
+
+
+
+
+int main(){
+
+    sf::RenderWindow window(sf::VideoMode(640,480), "Car_Gamee_Tutorial");
+    window.setFramerateLimit(60);
+
+    sf::Texture t1,t2;
+    t1.loadFromFile("images/background.png");
+    t2.loadFromFile("images/car.png");
+
+    sf::Sprite sprite1(t1);
+    sf::Sprite sprite2(t2);
+
+    sprite2.setOrigin(22,22);
+
+    sprite1.scale(2,2);
+    sprite2.scale(2,2);
+
+    float speed   = 0,   maxspeed   = 12;
+    float angle   = 0,   turnspeed  = 0.08;
+    float offsetX = 0,   offsetY    = 0;
+    float acc     = 0.3, dec        = 0.2;
+
+    for(int i = 0; i < 5; i++){
+    car[i].x = 300  + i*50;
+    car[i].y = 1700 + i * 80 ;
+    car[i].speed = 6 + i;}
+
+
+
+    while(window.isOpen()){
+        sf::Event e;
+        while(window.pollEvent(e)){
+            if(e.type == sf::Event::Closed)
+                window.close();}
+    bool Up = 0, Down = 0, Right = 0, Left = 0;
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) Up = 1;
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) Down = 1;
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) Right = 1;
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) Left = 1;
+
+
+    if(Up && speed < maxspeed)
+        if(speed < 0) speed += dec;
+        else speed += acc;
+
+    if(Down && speed > -maxspeed)
+        if(speed > 0) speed -= dec;
+        else speed -= acc;
+
+    if(!Up && !Down)
+        if(speed < -acc) speed += dec;
+        else if(speed > acc) speed -= dec;
+        else speed = 0;
+
+    if(Right && speed != 0) angle -= turnspeed * speed / maxspeed;
+    if(Left && speed != 0) angle += turnspeed * speed / maxspeed;
+
+    for(int i = 0; i < 5; i++)
+    for(int j = 0; j < 5; j++)
+     {
+
+        float dx = 0,dy = 0;
+
+        while (dx*dx+dy*dy < 22*22)
+
+           car[i].x+=dx/10.0;
+           car[i].x+=dy/10.0;
+           car[j].x-=dx/10.0;
+           car[j].y-=dy/10.0;
+
+             dx = car[i].x-car[j].x;
+
+             dy = car[i].y-car[j].y;
+            //std::cout<<dx<<std::endl;
+            if(!dx && !dy) break;}
+
+
+
+
+    car[0].speed = speed;
+    car[0].angle = -angle;
+
+    for(int i = 0; i< 5; i++)car[i].move();
+    for(int i = 1; i< 5; i++)car[i].opponents();
+
+
+    if(car[0].x > 320)offsetX = car[0].x -320;
+    if(car[0].y > 240)offsetY = car[0].y -240;
+    window.clear(sf::Color::Blue);
+
+    //std::cout<<angle<<std::endl;
+
+
+    sf::Color color[10] = {sf::Color::Red,sf::Color::Green,sf::Color::White,sf::Color::Black,sf::Color::Magenta};
+
+
+    sprite1.setPosition(-offsetX,-offsetY); window.draw(sprite1);
+
+    for(int i = 1; i < 5; i++){
+            //std::cout<<car[1].y<<std::endl;
+        sprite2.setPosition(car[i].x -offsetX , car[i].y -offsetY);
+        sprite2.setColor(color[i]);
+        sprite2.setRotation(car[i].angle * 180/PI);
+        window.draw(sprite2);}
+
+
+    sprite2.setPosition(car[0].x - offsetX,car[0].y - offsetY);
+    sprite2.setColor(color[0]);
+    sprite2.setRotation(car[0].angle *180/PI);
+     window.draw(sprite2);
+
+    window.display();
+
+
+
+
+
+
+
+
+
+}return 0;}
