@@ -72,8 +72,8 @@ int main(){
     window.setFramerateLimit(60);
 
     sf::Texture t1,t2;
-    t1.loadFromFile("images/background.png");
-    t2.loadFromFile("images/car.png");
+    t1.loadFromFile("imagesqwer/background.png");
+    t2.loadFromFile("imagesqwer/car.png");
 
     sf::Sprite sprite1(t1);
     sf::Sprite sprite2(t2);
